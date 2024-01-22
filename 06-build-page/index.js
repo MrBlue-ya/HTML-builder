@@ -11,12 +11,17 @@ fs.readdir(__dirname, (err, files) => {
 
   if (files.includes('project-dist')) {
     compileHtml();
+    compileCss();
+    compileAssets();
   } else {
     fs.mkdir(path.join(__dirname, 'project-dist'), (err) => {
       if (err) {
         console.error(err);
         return;
       }
+      compileHtml();
+      compileCss();
+      compileAssets();
     });
   }
 });
@@ -89,8 +94,55 @@ function compileHtml() {
   });
 }
 
-//Copy CSS files from styles folder
-
+// Copy CSS files from styles folder
 function compileCss() {
-  fs.writeFile(path.join(__dirname, 'project-dist'))
+  const pathStyleCss = path.join(__dirname, 'project-dist', 'style.css');
+
+  fs.truncate(pathStyleCss, (err) => {
+    if (err) {
+      console.log('');
+    }
+  });
+
+  fs.writeFile(pathStyleCss, '', (err) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    fs.readdir(path.join(__dirname, 'styles'), (err, files) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      for (let file of files) {
+        fs.readFile(
+          path.join(__dirname, 'styles', file),
+          'utf-8',
+          (err, data) => {
+            if (err) {
+              console.log(err);
+            }
+            fs.writeFile(pathStyleCss, data, { flag: 'a' }, (err) => {
+              if (err) {
+                console.log(err);
+              }
+            });
+          },
+        );
+      }
+    });
+  });
+}
+
+function compileAssets() {
+  fs.cp(
+    path.join(__dirname, 'assets'),
+    path.join(__dirname, 'project-dist', 'assets'),
+    { recursive: true },
+    (err) => {
+      if (err) {
+        console.log(err);
+      }
+    },
+  );
 }
