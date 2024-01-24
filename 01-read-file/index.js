@@ -3,11 +3,7 @@ const path = require('node:path');
 
 const readFile = path.join(__dirname, './text.txt');
 
-fs.readFile(readFile, { encoding: 'utf-8' }, (err, data) => {
-  if (err) {
-    console.log(err);
-    return;
-  } else {
-    console.log(data);
-  }
+const reader = fs.createReadStream(readFile, { encoding: 'utf-8' });
+reader.on('data', (chunk) => {
+  console.log(chunk);
 });
