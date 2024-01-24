@@ -3,31 +3,43 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const textFile = path.join(__dirname + '/myFile.txt');
-console.log(textFile);
 const rl = readline.createInterface(process.stdin, process.stdout);
 
-console.log('Hi there');
-
-rl.setPrompt('What is your name? ');
-rl.prompt();
-
-rl.on('line', (age) => {
-  if (age.toLowerCase() === 'exit') {
-    console.log("It's sad that you're already leaving");
+fs.readdir(__dirname, (err, files) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+  if (files.includes('myFile.txt')) {
+    askName();
   } else {
-    const data = 'Your name is: ' + age;
-    console.log(data);
-
-    fs.writeFile(textFile, data, (err) => {
+    fs.writeFile(path.join(__dirname, 'myFile.txt'), '', (err) => {
       if (err) {
         console.error(err);
-      } else {
-        console.log('Data was success saved in file');
+        return;
       }
     });
+    askName();
   }
-  rl.close();
 });
+
+function askName() {
+  rl.question('What is your name?', (answer) => {
+    if (answer !== 'exit') {
+      console.log('hi, ' + answer);
+      console.log('Enter another name or type exit');
+      askName();
+
+      fs.writeFile(textFile, answer, (err) => {
+        if (err) {
+          console.error(err);
+        }
+      });
+    } else {
+      rl.close();
+    }
+  });
+}
 
 rl.on('SIGINT', () => {
   console.log("\nIt's sad that you're already leaving");
