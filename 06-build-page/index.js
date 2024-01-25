@@ -115,7 +115,6 @@ function compileHtml() {
                     { encoding: 'utf-8' },
                     (err, aboutHtml) => {
                       if (err) {
-                        console.log(err);
                         return;
                       }
 
