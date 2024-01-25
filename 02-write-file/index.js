@@ -30,7 +30,7 @@ function askName() {
       console.log('Enter another name or type exit');
       askName();
 
-      fs.writeFile(textFile, answer, (err) => {
+      fs.appendFile(textFile, answer + '\n', (err) => {
         if (err) {
           console.error(err);
         }
